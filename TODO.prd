@@ -1,0 +1,66 @@
+# CV Çeviri Botu Projesi TODO Listesi
+
+## 1. Proje Altyapısı ve Gereksinimler
+- [x] Proje klasör yapısının oluşturulması
+- [x] Gerekli kütüphanelerin belirlenmesi ve package.json oluşturulması
+- [x] Git repository kurulumu
+- [x] README.md dosyasının oluşturulması
+
+## 2. Backend Geliştirme (Node.js)
+- [x] Express.js web uygulaması kurulumu
+- [x] TypeScript konfigürasyonu
+- [x] PDF dosya yükleme endpoint'i oluşturulması (multer)
+- [x] Çeviri API entegrasyonu (DeepL veya alternatif)
+- [x] PDF işleme ve metin çıkarma fonksiyonları (pdf-parse)
+- [x] Çeviri işlemi için gerekli servisler
+- [ ] PDF oluşturma ve indirme endpoint'i (pdf-lib)
+- [x] CORS ve güvenlik ayarları
+- [x] Error handling middleware
+
+## 3. Frontend Geliştirme (React)
+- [x] Modern ve kullanıcı dostu UI tasarımı
+- [x] PDF yükleme alanı
+- [x] Yan yana metin editörleri (orijinal ve çeviri)
+- [x] Çeviri durumu göstergesi
+- [ ] PDF indirme butonu
+- [x] Responsive tasarım
+
+## 4. Çeviri Servisi Entegrasyonu
+- [x] DeepL API veya alternatif servis araştırması
+- [x] API anahtarı yönetimi
+- [x] Çeviri kalitesi optimizasyonu
+- [x] Hata yönetimi
+
+## 5. PDF İşleme ve Formatlama
+- [ ] PDF'den metin çıkarma
+- [ ] CV formatında PDF oluşturma
+- [ ] Stil ve düzen ayarları
+- [ ] Font ve renk şeması
+
+## 6. Test ve Optimizasyon
+- [ ] Unit testlerin yazılması
+- [ ] Entegrasyon testleri
+- [ ] Performans optimizasyonu
+- [ ] Hata ayıklama ve düzeltme
+
+## 7. Dağıtım ve Deployment
+- [ ] Docker container oluşturma
+- [ ] Deployment scriptleri
+- [ ] Sunucu konfigürasyonu
+- [ ] SSL sertifikası kurulumu
+
+## 8. Dokümantasyon
+- [ ] Kullanım kılavuzu
+- [ ] API dokümantasyonu
+- [ ] Kurulum talimatları
+- [ ] Geliştirici dokümantasyonu
+
+## Teknoloji Stack Önerisi:
+- Backend: Node.js + Express.js + TypeScript
+- Frontend: React.js + TypeScript
+- PDF İşleme: pdf-parse, pdf-lib
+- Çeviri API: DeepL (ücretsiz plan) veya Google Cloud Translation API
+- Veritabanı: MongoDB (opsiyonel)
+- Deployment: Docker
+- State Yönetimi: Redux Toolkit veya Context API
+- UI Framework: Material-UI veya Tailwind CSS
