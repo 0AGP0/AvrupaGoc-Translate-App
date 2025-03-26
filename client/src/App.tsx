@@ -1,8 +1,10 @@
 import { useState } from 'react';
-import { Box, Typography, TextField, Button } from '@mui/material';
+import { Box, Typography, TextField, Button, Tooltip } from '@mui/material';
 import FileUpload from './components/FileUpload';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import DownloadIcon from '@mui/icons-material/Download';
+import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
+import GetAppIcon from '@mui/icons-material/GetApp';
 
 const theme = createTheme({
   palette: {
@@ -132,6 +134,7 @@ function App() {
   const [originalText, setOriginalText] = useState<string>('');
   const [translatedText, setTranslatedText] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string>('');
 
   const handleFileUpload = async (file: File) => {
     try {
@@ -230,13 +233,77 @@ function App() {
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
       
       console.log('PDF indirme işlemi tamamlandı');
     } catch (error) {
       console.error('PDF indirme hatası:', error);
       alert('PDF indirirken bir hata oluştu: ' + (error as Error).message);
     } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleDownloadInOriginalFormat = async () => {
+    try {
+      setIsLoading(true);
+      setError('');
+
+      // Kullanıcının PDF dosyasını seçmesini iste
+      const fileInput = document.createElement('input');
+      fileInput.type = 'file';
+      fileInput.accept = 'application/pdf';
+      
+      fileInput.onchange = async (event: Event) => {
+        const target = event.target as HTMLInputElement;
+        const file = target.files?.[0];
+        
+        if (!file) {
+          setIsLoading(false);
+          return;
+        }
+        
+        console.log('Orijinal format için dosya yükleniyor...', file);
+        
+        // Form verisini oluştur
+        const formData = new FormData();
+        formData.append('pdf', file);
+        formData.append('translatedText', translatedText);
+        
+        try {
+          // Yeni görüntü tabanlı API endpoint'ini kullan
+          const response = await fetch('http://localhost:5000/api/translate-pdf-image-based', {
+            method: 'POST',
+            body: formData,
+          });
+          
+          if (!response.ok) {
+            throw new Error('Sunucu hatası');
+          }
+          
+          // PDF'i indir
+          const blob = await response.blob();
+          const url = window.URL.createObjectURL(blob);
+          
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `translated-${file.name}`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          window.URL.revokeObjectURL(url);
+          
+          setIsLoading(false);
+        } catch (error: any) {
+          console.error('Görüntü tabanlı PDF indirme hatası:', error);
+          setError(`Görüntü tabanlı PDF indirme hatası: ${error.message}`);
+          setIsLoading(false);
+        }
+      };
+      
+      fileInput.click();
+    } catch (error: any) {
+      console.error('Görüntü tabanlı PDF işleme hatası:', error);
+      setError(`Görüntü tabanlı PDF işleme hatası: ${error.message}`);
       setIsLoading(false);
     }
   };
@@ -294,16 +361,32 @@ function App() {
                 </Box>
               </Box>
 
+              {/* İndirme düğmeleri */}
               {translatedText && (
-                <Box sx={styles.buttonContainer}>
-                  <Button
-                    variant="contained"
-                    startIcon={<DownloadIcon />}
-                    onClick={handleDownload}
-                    sx={styles.button}
-                  >
-                    Çeviriyi İndir
-                  </Button>
+                <Box mt={4} display="flex" justifyContent="center" gap={2}>
+                  <Tooltip title="Çevrilen metni şablonlu PDF'e dönüştür">
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={handleDownload}
+                      startIcon={<GetAppIcon />}
+                      disabled={isLoading}
+                    >
+                      Çeviriyi İndir
+                    </Button>
+                  </Tooltip>
+                  
+                  <Tooltip title="Orijinal PDF'i koruyarak üzerine çeviriyi ekle">
+                    <Button
+                      variant="contained"
+                      color="secondary"
+                      onClick={handleDownloadInOriginalFormat}
+                      startIcon={<PictureAsPdfIcon />}
+                      disabled={isLoading}
+                    >
+                      Yan Yana Görüntülü PDF
+                    </Button>
+                  </Tooltip>
                 </Box>
               )}
             </>

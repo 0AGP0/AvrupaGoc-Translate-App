@@ -4,8 +4,9 @@ import dotenv from 'dotenv';
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
-import { extractTextFromPDF, createTranslatedPDF } from './services/pdfService';
+import { extractTextFromPDF, createTranslatedPDF, translatePdfInPlace } from './services/pdfService';
 import { translateText } from './services/translationService';
+import translateRoutes from './routes/translateRoutes';
 
 // Environment variables
 dotenv.config();
@@ -16,12 +17,17 @@ if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });
 }
 
+// Temp klasörünü oluştur
+const tempDir = path.join(__dirname, '../../temp');
+fs.mkdirSync(tempDir, { recursive: true });
+
 const app = express();
 const port = process.env.PORT || 5000;
 
 // Middleware
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Multer configuration for PDF uploads
 const storage = multer.diskStorage({
@@ -132,6 +138,60 @@ app.post('/api/download-pdf', async (req, res) => {
     });
   }
 });
+
+// Orijinal PDF formatını koruyarak çeviri yapan endpoint
+app.post('/api/translate-pdf-inplace', upload.single('pdf'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: 'Dosya yüklenemedi.' });
+    }
+
+    console.log('Dosya yüklendi:', req.file.path);
+    
+    // PDF içeriğini oku
+    const pdfBuffer = fs.readFileSync(req.file.path);
+    
+    // PDF'ten metin çıkar
+    const originalText = await extractTextFromPDF(req.file.path);
+    console.log('Metin çıkarıldı, çeviri başlıyor...');
+    
+    // DeepL API ile çeviri yap
+    const translatedText = await translateText(originalText);
+    console.log('Çeviri tamamlandı');
+    
+    // Orijinal PDF formatında çeviri yap
+    console.log('PDF içeriği çevriliyor...');
+    const translatedPdfBuffer = await translatePdfInPlace(pdfBuffer, translatedText);
+    console.log('PDF çevirisi tamamlandı, boyut:', translatedPdfBuffer.length);
+    
+    // İşlem tamamlandıktan sonra geçici dosyayı sil
+    fs.unlinkSync(req.file.path);
+    
+    // Çevrilen PDF'i gönder
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', 'attachment; filename=translated-inplace.pdf');
+    res.setHeader('Content-Length', translatedPdfBuffer.length);
+    res.setHeader('Cache-Control', 'no-cache');
+    
+    console.log('Çevrilen PDF gönderiliyor...');
+    res.send(translatedPdfBuffer);
+    console.log('PDF gönderildi');
+  } catch (error) {
+    console.error('Hata:', error);
+    // Hata durumunda da dosyayı silmeye çalış
+    if (req.file && fs.existsSync(req.file.path)) {
+      fs.unlinkSync(req.file.path);
+    }
+    const errorMessage = error instanceof Error ? error.message : 'Bilinmeyen bir hata oluştu';
+    res.status(500).json({ 
+      error: 'Sunucu hatası',
+      details: errorMessage
+    });
+  }
+});
+
+// API rotalarını ekle
+app.use('/api', translateRoutes);
 
 // Error handling middleware
 app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
