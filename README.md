@@ -1,51 +1,81 @@
-# CV Çeviri Botu
+# PDF Çeviri Botu
 
-Bu proje, CV'leri otomatik olarak Almancaya çeviren ve düzenlenebilir bir arayüz sunan bir web uygulamasıdır.
+Bu proje, PDF belgelerini (özellikle CV'leri) bir dilden başka bir dile çeviren bir web uygulamasıdır. DeepL API kullanarak yüksek kaliteli çeviriler sağlar ve orijinal belgenin formatını korumaya çalışır.
 
 ## Özellikler
 
-- PDF CV yükleme
-- Otomatik çeviri
-- Yan yana düzenleme arayüzü
-- Özelleştirilmiş CV formatında PDF çıktısı
-
-## Teknolojiler
-
-- Frontend: React.js + TypeScript + Material-UI
-- Backend: Node.js + Express.js + TypeScript
-- PDF İşleme: pdf-parse, pdf-lib
-- Çeviri: DeepL API
+- PDF formatını ve düzeni koruyarak metin çevirisi
+- DeepL API ile profesyonel kalitede çeviri
+- Çoklu dil desteği
+- OCR desteği ile taranmış belgeleri çevirebilme
+- Kullanıcı dostu web arayüzü
+- Sürükle-bırak dosya yükleme desteği
 
 ## Kurulum
 
 ### Gereksinimler
 
-- Node.js (v14 veya üzeri)
-- npm veya yarn
+- Python 3.8+
+- DeepL API anahtarı
 
-### Backend Kurulumu
+### Adımlar
 
-```bash
-cd server
-npm install
-npm run dev
+1. Repoyu klonlayın:
+```
+git clone https://github.com/[kullanıcı]/pdf-translator.git
+cd pdf-translator
 ```
 
-### Frontend Kurulumu
-
-```bash
-cd client
-npm install
-npm start
+2. Sanal ortam oluşturun ve aktifleştirin:
 ```
+python -m venv venv
+# Windows
+venv\Scripts\activate
+# macOS/Linux
+source venv/bin/activate
+```
+
+3. Bağımlılıkları yükleyin:
+```
+pip install -r requirements.txt
+```
+
+4. `.env` dosyasını oluşturun ve DeepL API anahtarınızı ekleyin:
+```
+cp .env.example .env
+# .env dosyasını düzenleyerek DEEPL_API_KEY değerini ekleyin
+```
+
+5. OCR desteği için Tesseract kurulumu:
+- Windows için: https://github.com/UB-Mannheim/tesseract/wiki
+- macOS: `brew install tesseract`
+- Linux: `sudo apt-get install tesseract-ocr`
 
 ## Kullanım
 
-1. Web arayüzünden PDF CV'nizi yükleyin
-2. Çevirinin tamamlanmasını bekleyin
-3. Gerekli düzenlemeleri yapın
-4. "Tamamla" butonuna basarak çevrilmiş CV'nizi indirin
+1. Uygulamayı başlatın:
+```
+python app.py
+```
+
+2. Tarayıcınızda http://localhost:5000 adresine gidin
+3. PDF dosyasını yükleyin, kaynak ve hedef dilleri seçin
+4. "Çeviriyi Başlat" düğmesine tıklayın
+5. Çevrilmiş PDF dosyası otomatik olarak indirilecektir
+
+## Nasıl Çalışır?
+
+1. **PDF İşleme**: PyMuPDF (fitz) kullanarak PDF'ten metin ve konum bilgileri çıkarılır
+2. **Metin Gruplandırma**: Yakın metin blokları paragraflar ve cümleler oluşturmak için gruplandırılır
+3. **Çeviri**: Anlamlı metin blokları DeepL API kullanılarak çevrilir
+4. **PDF Oluşturma**: Orijinal PDF temel alınarak, metin içeriği çevirilerle değiştirilerek yeni bir PDF oluşturulur
+
+## Sorun Giderme
+
+- **Metin karmaşıklığı**: Kompleks belgeler veya karmaşık formatlar için OCR seçeneğini etkinleştirin
+- **API Hataları**: DeepL API anahtarınızın doğru olduğunu ve API limitinizin aşılmadığını kontrol edin
+- **Bellek Sorunları**: Çok büyük PDF dosyalarında bellek sınırlamaları olabilir. 16MB'dan küçük dosyalar kullanmayı deneyin
 
 ## Lisans
 
-MIT
+Bu proje MIT lisansı altında lisanslanmıştır - Detaylar için LICENSE dosyasına bakın. 

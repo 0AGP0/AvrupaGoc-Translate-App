@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Çeviri Başarılı - PDF Çeviri Uygulaması</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            padding-top: 2rem;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .success-icon {
+            font-size: 5rem;
+            color: #198754;
+            margin-bottom: 1rem;
+        }
+        .download-section {
+            text-align: center;
+            margin-top: 2rem;
+            margin-bottom: 2rem;
+            padding: 2rem;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 2rem;
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>PDF Çeviri Uygulaması</h1>
+            <p class="lead">PDF belgelerinizi Türkçe'den Almanca'ya çevirin</p>
+        </div>
+
+        <div class="download-section">
+            <div class="success-icon">
+                <i class="bi bi-check-circle-fill"></i>
+            </div>
+            <h2>Çeviri Başarıyla Tamamlandı!</h2>
+            <p class="lead">Belgeniz başarıyla çevrildi. Şimdi indirebilirsiniz.</p>
+            
+            <a href="{{ url_for('download_file', filename=filename) }}" class="btn btn-success btn-lg mt-3">
+                <i class="bi bi-download"></i> Çevirilen PDF'i İndir
+            </a>
+            
+            <div class="mt-4">
+                <a href="{{ url_for('upload_file') }}" class="btn btn-outline-primary">
+                    <i class="bi bi-arrow-left"></i> Yeni Dosya Çevir
+                </a>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>Bu uygulama, PDF belgelerini DeepL API kullanarak çevirir.</p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/font/bootstrap-icons.css">
+</body>
+</html> 
